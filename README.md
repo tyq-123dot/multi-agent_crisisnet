@@ -13,12 +13,23 @@ CrisisNet 是一个基于混合智能体架构的城市灾害应急响应系统�
 
 ## ✨ 核心特性
 
+### 基础功能
 - **多智能体异步协作**：EOC 指挥中心 + 4 个专业智能体，基于 Redis 消息总线异步通信
 - **三级降级机制**：云 API → Ollama 本地模型 → 规则引擎，极端场景仍可运行
 - **历史案例检索**：ChromaDB 向量存储 + Few-shot 学习，提升决策一致性
 - **人在回路审核**：LEVEL 1-4 分级审批，高风险决策人工把关
 - **决策全链路审计**：SQLite 持久化存储，支持时间/角色/关键词多维度查询
 - **多源数据接入**：可扩展的适配器架构，支持 GIS/IoT/社交媒体/热线/气象
+
+### 增强功能 (V2)
+- **任务队列与优先级调度**：支持任务依赖、截止时间、高优先级抢占
+- **短期/长期记忆**：环形缓冲短期记忆 + 可检索长期记忆，提升决策连贯性
+- **有限状态机 (FSM)**：6 种状态管理智能体生命周期（IDLE/EN_ROUTE/ON_SCENE/RETREATING/OUT_OF_SERVICE/SAFE_MODE）
+- **增强消息协议**：10 种消息类型（任务投标、资源协商、心跳、声誉更新等）
+- **资源管理与消耗**：资源库存、容量限制、优先级评分、智能共享
+- **信任与声誉评分**：基于交互的信誉系统，防止恶意/故障智能体干扰
+- **配置外部化**：独立 YAML 配置文件，支持热重载
+- **细粒度行动反馈**：结构化的行动结果，包含 success/effect/message/details
 
 ---
 
@@ -65,6 +76,7 @@ CrisisNet 是一个基于混合智能体架构的城市灾害应急响应系统�
 crisisnet/
 ├── crisisnet_common/         # 公共模块
 │   ├── models.py             # 数据模型和消息定义
+│   ├── enhanced_models.py    # 增强版数据模型
 │   ├── config.py             # 配置管理
 │   ├── llm_client.py         # LLM 客户端封装
 │   ├── llm_fallback.py       # LLM 降级客户端
@@ -74,14 +86,27 @@ crisisnet/
 │   ├── social_media_processor.py  # 社交媒体处理
 │   ├── human_in_the_loop.py  # 人在回路审核
 │   ├── decision_audit.py     # 决策审计
+│   ├── task_queue.py         # 任务队列与优先级调度
+│   ├── memory.py             # 短期/长期记忆模块
+│   ├── fsm.py                # 有限状态机
+│   ├── resource_manager.py   # 资源管理与消耗
+│   ├── reputation.py         # 信任与声誉评分
+│   ├── config_manager.py     # 配置管理器
 │   └── ...
 ├── agents/                   # 智能体实现
 │   ├── base.py               # 智能体基类
+│   ├── base_enhanced.py      # 增强版智能体基类 (V2)
 │   ├── eoc.py                # 应急指挥中心
 │   ├── fire_rescue.py        # 消防救援
 │   ├── medical.py            # 医疗救援
 │   ├── logistics.py          # 物流调度
 │   └── public_info.py        # 公共信息
+├── agents/configs/           # 智能体配置文件 (V2)
+│   ├── eoc.yaml
+│   ├── fire_rescue.yaml
+│   ├── medical.yaml
+│   ├── logistics.yaml
+│   └── public_info.yaml
 ├── env_sim/                  # 环境模拟器
 │   └── environment.py
 ├── frontend/                 # 前端
@@ -93,6 +118,8 @@ crisisnet/
 ├── main.py                   # 主程序入口
 ├── config.yaml               # 配置文件
 ├── requirements.txt          # 依赖列表
+├── README.md                 # 本文件
+├── ENHANCEMENTS_README.md    # 增强功能详细说明
 ├── INTERVIEW_GUIDE.md        # 面试指南
 ├── INTERVIEW_CHEAT_SHEET.md  # 面试备忘卡
 └── RESUME_DESCRIPTION.md     # 简历描述
@@ -222,8 +249,9 @@ python main.py --debug
 
 ## 📊 核心模块说明
 
-### 规则引擎
+### 基础模块
 
+#### 规则引擎
 内置 5 类智能体的应急决策模板，基于阈值触发：
 
 ```python
@@ -232,16 +260,13 @@ if zone.disaster_intensity > 0.7:
     return deploy_team(zone)
 ```
 
-### 案例数据库
-
+#### 案例数据库
 预置 3 个示例案例（地震/洪水/火灾），支持：
-
 - 语义检索
 - 灾害类型过滤
 - Few-shot 提示词生成
 
-### 数据适配器
-
+#### 数据适配器
 当前提供 Mock 适配器，可轻松扩展：
 
 ```python
@@ -251,18 +276,65 @@ class MyAdapter(DataAdapter):
     async def fetch_data(self): ...
 ```
 
----
+### 增强模块 (V2)
 
-## 📖 文档资源
+#### 任务队列
+基于优先级堆队列，支持：
+- 5 级优先级（CRITICAL > URGENT > HIGH > MEDIUM > LOW）
+- 任务依赖管理
+- 截止时间检测
+- 高优先级抢占
 
-- [RESUME_DESCRIPTION.md](./RESUME_DESCRIPTION.md) - 简历包装，3 个版本可选
-- [INTERVIEW_GUIDE.md](./INTERVIEW_GUIDE.md) - 面试指南，含高频问题与答案
-- [INTERVIEW_CHEAT_SHEET.md](./INTERVIEW_CHEAT_SHEET.md) - 面试突击备忘卡
+```python
+from crisisnet_common import TaskQueue, TaskPriority, TaskType
+
+task_queue = TaskQueue()
+task_queue.add_task(TaskType.RESCUE, "zone_05", TaskPriority.CRITICAL)
+```
+
+#### 记忆模块
+- **短期记忆**: 环形缓冲，保留最近 N 条 (observation, action, result)
+- **长期记忆**: 可按位置/事件类型检索，支持时间衰减
+
+#### 有限状态机 (FSM)
+6 种状态管理智能体生命周期：
+- `IDLE`: 空闲，可接受任务
+- `EN_ROUTE`: 移动中
+- `ON_SCENE`: 现场执行
+- `RETREATING`: 撤退中
+- `OUT_OF_SERVICE`: 故障
+- `SAFE_MODE`: 安全模式
+
+#### 增强版智能体
+`EnhancedBaseAgent` 集成了所有增强功能：
+- 任务队列
+- 短期/长期记忆
+- FSM 状态管理
+- 资源管理
+- 声誉管理
+- 配置外部化
 
 ---
 
 ## 🛣️ 路线图
 
+### 已完成 ✅
+- [x] 任务队列与优先级调度
+- [x] 短期/长期记忆模块
+- [x] 有限状态机 (FSM)
+- [x] 增强消息协议
+- [x] 资源管理与消耗模型
+- [x] 异常处理与降级逻辑
+- [x] 智能体配置外部化
+- [x] 信任与声誉评分系统
+- [x] 细粒度行动反馈
+
+### 进行中 🔄
+- [ ] 继承 EnhancedBaseAgent 实现具体智能体子类
+- [ ] 完善任务执行的具体业务逻辑
+- [ ] 集成人在回路和决策审计到增强版
+
+### 待开发 📋
 - [ ] 接入真实 GIS 数据
 - [ ] 接入真实 IoT 传感器
 - [ ] WebSocket 实时前端

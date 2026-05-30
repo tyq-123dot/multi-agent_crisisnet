@@ -19,7 +19,7 @@ from .config import (
     Config,
     RedisConfig,
     SimulationConfig,
-    AgentConfig,
+    AgentConfig as OldAgentConfig,
     AgentsConfig,
     APIKeysConfig,
     LoggingConfig
@@ -39,6 +39,17 @@ from .human_in_the_loop import (
     ApprovalRequest, ApprovalStatus, ApprovalLevel,
     DirectCommand, requires_approval
 )
+from .enhanced_models import (
+    Task, TaskPriority, TaskStatus, TaskType,
+    AgentFSMState, MessageType, EnhancedAgentMessage,
+    MemoryEntry, KeyEvent, ActionResult, AgentConfig
+)
+from .task_queue import TaskQueue
+from .memory import RingBufferMemory, LongTermMemory
+from .fsm import AgentFSM, StateTransition
+from .resource_manager import ResourceInventory, ResourceSharingManager
+from .reputation import ReputationManager
+from .config_manager import AgentConfigManager
 
 __all__ = [
     "AgentRole",
@@ -59,7 +70,7 @@ __all__ = [
     "Config",
     "RedisConfig",
     "SimulationConfig",
-    "AgentConfig",
+    "OldAgentConfig",
     "AgentsConfig",
     "APIKeysConfig",
     "LoggingConfig",
@@ -89,5 +100,25 @@ __all__ = [
     "ApprovalStatus",
     "ApprovalLevel",
     "DirectCommand",
-    "requires_approval"
+    "requires_approval",
+    "Task",
+    "TaskPriority",
+    "TaskStatus",
+    "TaskType",
+    "AgentFSMState",
+    "MessageType",
+    "EnhancedAgentMessage",
+    "MemoryEntry",
+    "KeyEvent",
+    "ActionResult",
+    "AgentConfig",
+    "TaskQueue",
+    "RingBufferMemory",
+    "LongTermMemory",
+    "AgentFSM",
+    "StateTransition",
+    "ResourceInventory",
+    "ResourceSharingManager",
+    "ReputationManager",
+    "AgentConfigManager"
 ]
