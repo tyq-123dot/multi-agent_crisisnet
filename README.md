@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CrisisNet
 
 CrisisNet 是一个基于多智能体的城市灾害应急响应仿真系统。
@@ -110,3 +111,7 @@ CrisisNet 由以下组件组成：
 ## 配置说明
 
 参考 `config.yaml` 中的详细配置选项。
+=======
+# multi-agent_crisisnet
+CrisisNet - 城市灾害多智能体应急响应系统  
+>>>>>>> c52d6dd1735a197a7b66633a046af25096caffa2
