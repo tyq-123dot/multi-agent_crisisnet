@@ -1,0 +1,50 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"id": "zone_01", "name": "Zone 1"},
+      "geometry": {"type": "Point", "coordinates": [0, 0]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "zone_02", "name": "Zone 2"},
+      "geometry": {"type": "Point", "coordinates": [1, 0]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "zone_03", "name": "Zone 3"},
+      "geometry": {"type": "Point", "coordinates": [2, 0]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "zone_04", "name": "Zone 4"},
+      "geometry": {"type": "Point", "coordinates": [0, 1]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "zone_05", "name": "Zone 5"},
+      "geometry": {"type": "Point", "coordinates": [1, 1]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "zone_06", "name": "Zone 6"},
+      "geometry": {"type": "Point", "coordinates": [2, 1]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "zone_07", "name": "Zone 7"},
+      "geometry": {"type": "Point", "coordinates": [0, 2]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "zone_08", "name": "Zone 8"},
+      "geometry": {"type": "Point", "coordinates": [1, 2]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "zone_09", "name": "Zone 9"},
+      "geometry": {"type": "Point", "coordinates": [2, 2]}
+    }
+  ]
+}

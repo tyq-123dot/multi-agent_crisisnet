@@ -1,0 +1,41 @@
+simulation:
+  ticks_per_real_second: 1.0
+  total_ticks: 500
+  map_file: "data/city_grid.geojson"
+  random_seed: 42
+
+llm:
+  base_url: "https://api.deepseek.com/v1"
+  api_key: "sk-b18f8fbf607c48c992e91f68aa7ed895"
+
+agents:
+  eoc:
+    decision_interval_ticks: 5
+    llm_model: "deepseek-chat"
+  fire_rescue:
+    decision_interval_ticks: 2
+    llm_model: "deepseek-chat"
+  medical:
+    decision_interval_ticks: 2
+    llm_model: "deepseek-chat"
+  logistics:
+    decision_interval_ticks: 3
+    llm_model: "deepseek-chat"
+  public_info:
+    decision_interval_ticks: 4
+    llm_model: "deepseek-chat"
+
+api_keys:
+  openai: ""
+  openweather: ""
+
+redis:
+  host: "localhost"
+  port: 6379
+  db: 0
+  password: null
+
+logging:
+  level: "INFO"
+  llm_log_file: "logs/llm_calls.jsonl"
+  events_log_file: "logs/events.log"
